@@ -112,7 +112,7 @@ name = "libc"
 version = "0.2.7"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 "#).unwrap();
-    println!("one: {}", run(cmd().arg(&registry).arg("--sync").arg(&lock)));
+    println!("one: {}", run(cmd().arg(&registry).arg("--no-delete").arg("--sync").arg(&lock)));
 
     assert!(registry.join("index").is_dir());
     assert!(registry.join("index/li/bc/libc").is_file());
@@ -131,7 +131,7 @@ name = "libc"
 version = "0.2.6"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 "#).unwrap();
-    println!("two: {}", run(cmd().arg(&registry).arg("--sync").arg(&lock)));
+    println!("two: {}", run(cmd().arg(&registry).arg("--no-delete").arg("--sync").arg(&lock)));
 
     assert!(registry.join("index").is_dir());
     assert!(registry.join("index/li/bc/libc").is_file());
@@ -270,7 +270,7 @@ dependencies = [
  "libc 0.2.6 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 "#).unwrap();
-    run(cmd().arg(&registry).arg("--sync").arg(&lock));
+    run(cmd().arg(&registry).arg("--no-delete").arg("--sync").arg(&lock));
 
     contents.clear();
     File::open(registry.join("index/li/bc/libc")).unwrap()
@@ -462,7 +462,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 }
 
 fn run(cmd: &mut Command) -> String {
-    let output = cmd.output().unwrap();
+    let output = cmd.env("RUST_BACKTRACE", "1").output().unwrap();
     if !output.status.success() {
         panic!("failed to run {:?}\n--- stdout\n{}\n--- stderr\n{}", cmd,
                String::from_utf8_lossy(&output.stdout),
